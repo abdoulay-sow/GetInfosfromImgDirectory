@@ -1,0 +1,11 @@
+doctype
+html(lang='en')
+  head
+    title Export Faces:
+  body
+    h1 Depo dossier pour l'exporter en Excel
+    div
+      form(action="/" method="POST" enctype="multipart/form-data")
+        p Parcourir le dossier
+          input(type="file" name="folder[]" multiple="" directory="" webkitdirectory="" mozdirectory="")
+        input(type="submit", value="Envoyer")

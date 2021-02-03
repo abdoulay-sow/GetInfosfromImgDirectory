@@ -1,6 +1,6 @@
 var fs = require('fs');
 const exifParser = require('exif-parser');
-var excel = require('excel4node');
+var excel = require('node-excel-export');
 
 exports.isHiddenFile = fileName => {
   return (/(^|\/)\.[^\/\.]/g).test(fileName);
@@ -39,42 +39,96 @@ exports.isNeeded = fileName => {
 
 exports.addInfos = (fileName) => {
   let metadatas = this.getFileMetadata(fileName);
+  
+  
+  let name = this.getFileName(fileName.replace(/____/g, '/'))  
+  let chemin = fileName.split("uploads")[1].split('.')[0].replace(/____/g, '/')
   if (metadatas && metadatas.tags && metadatas.tags.GPSLatitude) {
     return {
-      name: this.getFileName(fileName),
+      nom: this.getFileName(fileName.replace(/____/g, '/')),
       lat: metadatas.tags.GPSLatitude,
-      long: metadatas.tags.GPSLongitude
+      lng: metadatas.tags.GPSLongitude,
+      repertoire: chemin.replace(name, '')
     }
   }
   
 }
 
-exports.generateExel = (infos) => {
-  if(infos.length > 0) {
-    const workbook = new excel.Workbook();
-    const worksheet = workbook.addWorksheet('Faces');
+exports.generatexlsx = (infos) => {
+  let styles = {
+    headerDark: {
+        fill: {
+            fgColor: {
+                rgb: 'FF000000'
+            }
+        },
+        font: {
+            color: {
+                rgb: 'FFFFFFFF'
+            },
+            sz: 14,
+            bold: true,
+            // underline: true            
+        },   
+        alignment: {
+          horizontal: 'center',
+          vertical: 'center',
+        }     
+    }    
+  };
 
-    worksheet.cell(1, 1).string('Nom');
-    worksheet.cell(1, 2).string('Latitude');
-    worksheet.cell(1, 3).string('Longitude');
+  // Array of objects representing heading rows
+  let heading = [];
 
-    infos.forEach((info, i) => {
-      let j = i + 2;
-      for (let key in info) {          
-        let k = 1;
-        if (key === 'name') {
-          worksheet.cell(j, k).string(info.name);
+  // export structure
+  let specification = {
+    repertoire: { // <- the key should match the actual data key
+        displayName: 'Repertoire', // <- Here you specify the column header
+        headerStyle: styles.headerDark, // <- Header style        
+        width: 220 // <- width in pixels
+    },
+    nom: {
+        displayName: 'Nom',
+        headerStyle: styles.headerDark,
+        width: 200 // <- width in chars (when the number is passed as string)
+    },
+    lat: {
+        displayName: 'Latitude',
+        headerStyle: styles.headerDark,
+        // cellStyle: styles.cellPink, // <- Cell style
+        width: 200 // <- width in pixels
+    },
+    lng: {
+        displayName: 'Longitude',
+        headerStyle: styles.headerDark,
+        // cellStyle: styles.cellPink, // <- Cell style
+        width: 200 // <- width in pixels
+    }
+  };
+
+  let dataset = [];  
+  infos.forEach((info, i) => {
+    dataset.push(
+      {
+        repertoire: info.repertoire, 
+        nom: info.nom, 
+        lat: info.lat, 
+        lng: info.lng}
+    )        
+  });
+
+  let report = excel.buildExport(
+    [ // <- Notice that this is an array. Pass multiple sheets to create multi sheet report
+        {
+            name: 'Faces', // <- Specify sheet name (optional)
+            heading: heading, // <- Raw heading array (optional)
+            specification: specification, // <- Report specification
+            data: dataset // <-- Report data
         }
-        if (key === 'lat') {            
-          worksheet.cell(j, k+1).number(info.lat);
-        }
-        if (key === 'long') {            
-          worksheet.cell(j, k+2).number(info.long);
-        }
-      }
-    });
+    ]
+  );  
 
-    return workbook;    
+  return report;
 
-  }
 }
+

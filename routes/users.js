@@ -32,12 +32,17 @@ router.post('/', function(req, res, next) {
     const CHILD_FOLDER = [];
     const faceInfos = [];
     let directoryUploads = path.join(__dirname, 'uploads')
-    let face = null;
-    let workbook = null;
+    let directoryMiniUploads = path.join(__dirname, 'uploads', 'mini')
+    let face = null;    
 
     fs.readdirSync(directoryUploads).map(fileName => { 
       if(fs.lstatSync(path.join(directoryUploads, fileName)).isFile()) {
         CHILD_FOLDER.push(path.join(directoryUploads, fileName));
+      }      
+    })
+    fs.readdirSync(directoryMiniUploads).map(fileName => { 
+      if(fs.lstatSync(path.join(directoryMiniUploads, fileName)).isFile()) {
+        CHILD_FOLDER.push(path.join(directoryMiniUploads, fileName));
       }      
     })
     CHILD_FOLDER.map(file => {
@@ -47,8 +52,10 @@ router.post('/', function(req, res, next) {
         faceInfos.push(face);
       }
     });    
-    workbook = exportXlsxService.generateExel(faceInfos);
-    workbook.write('FacesPhotosInfos.xlsx', res);
+    if(faceInfos.length > 0) {
+      let workbook = exportXlsxService.generateExel(faceInfos);
+      workbook.write('FacesPhotosInfos.xlsx', res);
+    }    
   })
   req.pipe(req.busboy);
 });

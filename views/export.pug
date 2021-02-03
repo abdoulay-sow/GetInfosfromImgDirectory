@@ -1,11 +1,17 @@
 doctype
-html(lang='en')
+html(lang='fr')
   head
     title Export Faces:
+    link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1' crossorigin='anonymous')
   body
-    h1 Depo dossier pour l'exporter en Excel
-    div
-      form(action="/" method="POST" enctype="multipart/form-data")
-        p Parcourir le dossier
-          input(type="file" name="folder[]" multiple="" directory="" webkitdirectory="" mozdirectory="")
-        input(type="submit", value="Envoyer")
+    h1(style='text-align: center; padding: 40px') Depo dossier photo pour exportation Excel
+    div(class='container' style='text-align: center')
+      form(action="/" method="POST" enctype="multipart/form-data")  
+        div(class="d-grid gap-2")      
+          label(for="files" class="btn btn-primary") Selectionner un dossier
+        input(id="files" style="visibility:hidden;" type="file" name="folder[]" multiple="" directory="" webkitdirectory="" mozdirectory="")  
+        p(id="message")       
+        input(class="btn btn-success btn-sm" id="envoyer" type="submit", value="Envoyer")
+
+  script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+  script(src="javascripts/index.js")

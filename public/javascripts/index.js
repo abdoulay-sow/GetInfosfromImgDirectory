@@ -40,17 +40,15 @@ $('form').submit(function(e) {
       console.log('Sending');
     },
     success:function(data, status, xhr){
-
       let uri = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
-                let url = uri + data.content;
-                setTimeout(function () {
-                    var location = document.createElement("a");
-                    location.href = url;
-                    location.download = "faces.xlsx"
-                    document.body.appendChild(location)
-                    location.click()
-
-                }, 100);
+      let url = uri + data.content;
+      setTimeout(function () {
+          var location = document.createElement("a");
+          location.href = url;
+          location.download = "faces.xlsx"
+          document.body.appendChild(location)
+          location.click()
+      }, 100);
     },
     errors:function(err) {
       console.log(err);

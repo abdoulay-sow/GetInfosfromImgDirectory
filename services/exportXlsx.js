@@ -42,7 +42,7 @@ exports.addInfos = (fileName) => {
   
   
   let name = this.getFileName(fileName.replace(/____/g, '/'))  
-  let chemin = fileName.split("uploads")[1].split('.')[0].replace(/____/g, '/')
+  let chemin = fileName.split("uploads")[1].split('.')[0].replace(/____/g, '/').replace(/\//g, '')
   if (metadatas && metadatas.tags && metadatas.tags.GPSLatitude) {
     return {
       nom: this.getFileName(fileName.replace(/____/g, '/')),
